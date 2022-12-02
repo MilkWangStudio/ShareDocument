@@ -1,0 +1,26 @@
+<html lang="en">
+  <header>
+    <title>ToDOList</title>
+  </header>
+  <body>
+    <h2>待办事项：</h2>
+    <ul id="container"></ul>
+  </body>
+  <script src="./lib.js"></script>
+  <script>
+    window.onload = async function () {
+      const list = await get("http://localhost:8080/api/list");
+      console.log("load server data", list);
+      const container = document.querySelector("#container");
+      for (index in list) {
+        const item = list[index];
+        const a = document.createElement("a");
+        a.href = `/demo/spring-boot-jsp-front/detail.html?id=${item.id}`;
+        a.innerHTML = item.content;
+        const li = document.createElement("li");
+        li.appendChild(a);
+        container.appendChild(li);
+      }
+    };
+  </script>
+</html>

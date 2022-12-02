@@ -1,0 +1,22 @@
+<html lang="en">
+  <header>
+    <title>ToDOList</title>
+  </header>
+  <body>
+    待办详情：<span id="content"></span><br />
+    状态：<span id="status"></span>
+  </body>
+  <script src="./lib.js"></script>
+  <script>
+    window.onload = async function () {
+      const detail = await get(
+        `http://localhost:8080/api/detail?id=${getParam("id")}`
+      );
+      console.log("load server data", detail);
+      const content = document.querySelector("#content");
+      content.innerHTML = detail.content;
+      const status = document.querySelector("#status");
+      status.innerHTML = detail.status;
+    };
+  </script>
+</html>

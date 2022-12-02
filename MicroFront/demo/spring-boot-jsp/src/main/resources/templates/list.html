@@ -1,0 +1,11 @@
+<html lang="en">
+    <header>
+        <title>ToDOList</title>
+    </header>
+    <body>
+        <h2>待办事项：</h2>
+        <ul th:each="item:${todoList}">
+            <li><a th:href="@{/todo/detail(id=${item.id})}" th:text="${item.content}"></a></li>
+        </ul>
+    </body>
+</html>
