@@ -1,4 +1,5 @@
 # 微前端
+![History](./static/FrontHistory.png)
 ## 1. 前端发展阶段
 前端开发模式是如何一步一步发展到今天的？为什么现在我们前端开发需要安装 node、npm、webpack 等工具？如果不用这些技术，那如何做前端开发呢？
 
@@ -100,43 +101,100 @@ module.exports = {
 ```
 
 ### 2.3 SystemJS
+模块加载，但是应用在Client端。
 
+引入模块
+```vue
+<script type="systemjs-importmap">
+  {
+    "imports": {
+      "lodash": "https://cdn.bootcdn.net/ajax/libs/lodash.js/4.17.20/lodash.min.js" 
+    }
+  }
+</script>
+```
 
-### 2.4 iframe
+使用模块
+```javascript
+System.register(['lodash'], (exports) => {
+   return {
+     setters: [
+       () => {};
+     ],
+     execute() {
+       console.log('test');
+       exports({_: lodash});
+     })
+   }
+ }
+})
+```
 
-### 2.5 WebComponent
+### 2.4 IFrame
+1997年出现的老大哥，浏览器默认实现的最强的隔离级别。每个嵌入IFrame的网页都有自己的会话历史记录 (session history)和DOM 树。  
+
+通过IFrame可以做到在页面的任何位置，嵌入任何页面。
+
+### 2.5 WebComponents
+新出的HTML标准，浏览器兼容性不太好。  
+
+Vue、React等语言因为是通过虚拟DOM去渲染真实DOM，因此可以很方便的做到代码复用。但是纯HTML标签无法进行扩展，因此HTML代码在组件化方面能力很差。WebComponents的出现就是为了解决这个问题。  
+
+WebComponents由以下三项技术组成。
+- Custom elements（自定义元素）：一组 JavaScript API，允许您定义 custom elements 及其行为，然后可以在您的用户界面中按照需要使用它们。
+- Shadow DOM（影子 DOM）：一组 JavaScript API，用于将封装的“影子”DOM 树附加到元素（与主文档 DOM 分开呈现）并控制其关联的功能。通过这种方式，您可以保持元素的功能私有，这样它们就可以被脚本化和样式化，而不用担心与文档的其他部分发生冲突。
+- HTML templates（HTML 模板）： ```<template/>``` 和 ```<slot/>``` 元素使您可以编写不在呈现页面中显示的标记模板。然后它们可以作为自定义元素结构的基础被多次重用。
+
+ 
+![WebComponent-Caniuse](./static/WebComponent-Caniuse.png)
 
 ## 3. 微前端方案
 |方案|描述|优点|缺点|
 |--|--|--|--|
-|Nginx路由转发 | 通过Nginx配置反向代理来实现不同路径映射到不同应用 | 简单，快速，易配置 | 在切换应用时会触发浏览器刷新，影响体验|
-|npm包形式 | 子工程以NPM包的形式发布源码；打包构建发布还是由基座工程管理，打包时集成。 | 打包部署慢，不能单独部署 | 打包部署慢，不能单独部署|
+|多页应用 | 通过Nginx配置反向代理来实现不同路径映射到不同应用 | 简单，快速，易配置 | 在切换应用时会触发浏览器刷新，影响体验|
+|npm包形式 | 子工程以NPM包的形式发布源码；打包构建发布还是由基座工程管理，打包时集成。 | 实现方案简单，可以直接调用代码交互。 | 打包部署慢，不能单独部署|
+|Module Federaltion|Webpack新出的加载远程包方案，解决的问题是项目解耦，而不是多系统聚合，只是恰好可以用来做微前端技术基础|解耦后子项目打包速度快|没有隔离能力，用它来实现微前端有不少要改造的|
 |iframe嵌套 | 父应用单独是一个页面，每个子应用嵌套一个iframe | 实现简单，子应用之间自带沙箱，天然隔离，互不影响 | iframe的样式显示、兼容性等都具有局限性；需要自己解决，且iframe未来发展不明晰|
-
+|WebComponents|HTML新出的前端组件化方案，有隔离能力，可以用来做沙箱|使用的是HTML标准，属于未来发展的方向|目前兼容性不太好|
 
 ## 4. 微前端框架
 ### 4.1 Single-SPA
-
+出现最早的微前端框架，自己实现了一套JS加载方式、通信方式。没有隔离机制，CSS、JS会污染主应用。
 ### 4.2 Qiankun（阿里）
-基于Single-SPA，提供了JS、CSS隔离机制，然后将入口从JS改为了HTML，接入更加方便
+基于Single-SPA，提供了JS、CSS隔离机制，然后将入口从JS改为了HTML，接入更加方便。
 
 ### 4.3 Wujie（腾讯）
-IFrame实现方案，JS放到同域IFrame隔离，样式通过ShadowDOM挂载到主应用
+基于IFrame实现，JS放到同域IFrame隔离，样式通过ShadowDOM挂载到主应用。
 
 ### 4.4 MicroApp（京东）
-类似Wujie，IFrame实现方案，区别是ShadowDOM的View是一个IFrame
+基于WebComponents实现，符合HTML规范标准。
 
 ### 4.5 EMP（YY）
-Module-Federaltion实现方案
+基于Webpack的Module-Federaltion实现方案，通过构建的方式进行微前端构建。
 
 
 ## 参考资料
-- [MicroFront-WebComponent方案](https://micro-frontends.org/)
+- [MDN-WebComponents](https://developer.mozilla.org/zh-CN/docs/Web/Web_Components)
 - [MDN-Web入门](https://developer.mozilla.org/zh-CN/docs/Learn/Getting_started_with_the_web)
 - [MDN-Ajax](https://developer.mozilla.org/zh-CN/docs/Web/Guide/AJAX)
 - [Wiki-Ajax](https://zh.wikipedia.org/wiki/AJAX)
 - [Wiki-编程语言历史](https://zh.m.wikipedia.org/zh-sg/%E7%A8%8B%E5%BC%8F%E8%AA%9E%E8%A8%80%E6%AD%B7%E5%8F%B2)
+- [MicroFront-WebComponents方案](https://micro-frontends.org/)
 - [Webpack-Module-Federaltion](https://webpack.docschina.org/concepts/module-federation/)
 - [Webpack-Chunk](https://webpack.docschina.org/concepts/under-the-hood/)
 - [MicroApp](https://micro-zoe.github.io/micro-app/)
 - [EMP](https://emp2.netlify.app/)
+- [JavaScript-模块](https://juejin.cn/post/6844903632198959112#heading-1)
+- [SystemJS](https://github.com/systemjs/systemjs)
+
+
+
+
+TODO
+方案对比文档：优缺点、技术栈、接入成本、维护成本、性能、社区活跃度、文档丰富度等
+
+
+问题1：SharedLib Build速度
+问题2：嵌入子应用的学习成本 - 微前端的学习成本、接入成本
+问题3：前端样式不统一，考虑微前端是否有统一解决方案，例如组件封装，所有应用复用
+- 禁止前端切换主题
